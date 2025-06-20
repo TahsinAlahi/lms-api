@@ -133,9 +133,36 @@ const updateBookById: RequestHandler = async (req, res, next) => {
   }
 };
 
+const deleteBookById: RequestHandler = async (req, res, next) => {
+  try {
+    const { bookId } = req.params;
+    if (!mongoose.isValidObjectId(bookId)) {
+      throw createHttpError({
+        message: "Invalid book ID",
+        errorDetails: "Invalid book ID provided",
+      });
+    }
+    const deletedBook = await booksModel.findByIdAndDelete(bookId);
+    if (!deletedBook) {
+      throw createHttpError(404, {
+        message: "Book not found",
+        errorDetails: "Book not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Book deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   postBooks,
   getAllBooks,
   getBookById,
   updateBookById,
+  deleteBookById,
 };

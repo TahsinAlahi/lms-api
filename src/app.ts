@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
 import booksRoute from "./app/routes/books.route";
+import borrowRoute from "./app/routes/borrow.route";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/api/books", booksRoute);
+app.use("/api/borrow", borrowRoute);
 
 app.use(/(.*)/, (_req: Request, _res: Response, next: NextFunction) => {
   next(createHttpError(404, "endpoints not found"));
