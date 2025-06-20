@@ -71,6 +71,49 @@ const createBorrow: RequestHandler = async (req, res, next) => {
   }
 };
 
+const borrowedBookSummery: RequestHandler = async (req, res, next) => {
+  try {
+    const summary = await borrowsModel.aggregate([
+      {
+        $group: {
+          _id: "$book",
+          totalQuantity: { $sum: "$quantity" },
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "_id",
+          foreignField: "_id",
+          as: "bookDetails",
+        },
+      },
+      {
+        $unwind: "$bookDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          totalQuantity: 1,
+          book: {
+            title: "$bookDetails.title",
+            isbn: "$bookDetails.isbn",
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Borrowed books summary retrieved successfully",
+      data: summary,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createBorrow,
+  borrowedBookSummery,
 };
