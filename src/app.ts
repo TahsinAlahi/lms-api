@@ -19,6 +19,9 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json());
 
+app.get("/api/ping", (_req: Request, res: Response) => {
+  res.json({ message: "This server was pinged so here's the pong" });
+});
 app.use("/api/books", booksRoute);
 app.use("/api/borrow", borrowRoute);
 
