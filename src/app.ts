@@ -19,6 +19,9 @@ app.use(
 app.use(morgan("dev"));
 app.use(express.json());
 
+app.get("/", (_req: Request, res: Response) => {
+  res.send("This is a server for a library management system");
+});
 app.get("/api/ping", (_req: Request, res: Response) => {
   res.json({ message: "This server was pinged so here's the pong" });
 });
