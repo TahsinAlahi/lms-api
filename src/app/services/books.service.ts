@@ -1,5 +1,7 @@
 import { RequestHandler } from "express";
 import booksModel, { Genre } from "../models/books.model";
+import mongoose from "mongoose";
+import createHttpError from "http-errors";
 
 const postBooks: RequestHandler = async (req, res, next) => {
   try {
@@ -20,7 +22,11 @@ const postBooks: RequestHandler = async (req, res, next) => {
       data: newBook,
     });
   } catch (error) {
-    next(error);
+    next({
+      status: 500,
+      message: "Failed to create book",
+      errorDetails: (error as Error).message,
+    });
   }
 };
 
@@ -53,12 +59,83 @@ const getAllBooks: RequestHandler = async (req, res, _next) => {
     res.status(500).json({
       success: false,
       message: "Failed to retrieve books",
-      error: (error as Error).message,
+      errorDetails: (error as Error).message,
     });
+  }
+};
+
+const getBookById: RequestHandler = async (req, res, next) => {
+  try {
+    const { bookId } = req.params;
+    if (!mongoose.isValidObjectId(bookId)) {
+      throw createHttpError({
+        message: "Invalid book ID",
+        errorDetails: "Invalid book ID provided",
+      });
+    }
+
+    const book = await booksModel.findById(bookId);
+    if (!book) {
+      throw createHttpError(404, {
+        message: "Book not found",
+        errorDetails: "Book not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Book retrieved successfully",
+      data: book,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateBookById: RequestHandler = async (req, res, next) => {
+  try {
+    const { bookId } = req.params;
+    if (!mongoose.isValidObjectId(bookId)) {
+      throw createHttpError({
+        message: "Invalid book ID",
+        errorDetails: "Invalid book ID provided",
+      });
+    }
+
+    const { title, author, genre, isbn, description, copies } = req.body;
+    const updatedBook = await booksModel.findByIdAndUpdate(
+      bookId,
+      {
+        title,
+        author,
+        genre,
+        isbn,
+        description,
+        copies,
+      },
+      { new: true }
+    );
+
+    if (!updatedBook) {
+      throw createHttpError(404, {
+        message: "Book not found",
+        errorDetails: "Book not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+      data: updatedBook,
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 export default {
   postBooks,
   getAllBooks,
+  getBookById,
+  updateBookById,
 };

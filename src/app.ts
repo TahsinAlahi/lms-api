@@ -35,11 +35,8 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     errorStatus = error.status;
     errorMessage = error.message;
 
-    // Capture any custom `errors` property (e.g., from validation)
-    if ("errors" in error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      errorDetails = (error as any).errors;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    errorDetails = error.errorDetails as any;
   } else if (error instanceof Error) {
     errorMessage = error.message;
   }
