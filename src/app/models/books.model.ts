@@ -9,6 +9,12 @@ export enum Genre {
   FANTASY = "FANTASY",
 }
 
+type IBookDocument = InferSchemaType<typeof bookSchema>;
+
+interface IBook extends IBookDocument, Document {
+  updateAvailability: () => void;
+}
+
 const bookSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -27,13 +33,14 @@ const bookSchema = new Schema(
     },
     available: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    methods: {
+      updateAvailability: function (): void {
+        this.available = this.copies > 0;
+      },
+    },
+  }
 );
-
-bookSchema.methods.updateAvailability = function () {
-  this.available = this.copies > 0;
-};
-
-export type IBook = InferSchemaType<typeof bookSchema>;
 
 export default model<IBook>("Book", bookSchema);
