@@ -1,4 +1,4 @@
-# 📚 Library Management API
+# 📚 Boba Library Management API
 
 A RESTful Library Management System built using **Express.js**, **TypeScript**, and **MongoDB (Mongoose)**. This API allows for managing a collection of books and handling borrowing operations with business logic, validation, filtering, and aggregation.
 
@@ -142,9 +142,3 @@ MONGO_URI=mongodb://localhost:27017/library-db
 ```bash
 npm run dev
 ```
-
----
-
-## 📹 Video Explanation
-
-[📺 Watch Demo Video](https://youtube.com)
