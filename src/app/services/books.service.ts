@@ -22,6 +22,28 @@ const postBooks: RequestHandler = async (req, res, next) => {
       data: newBook,
     });
   } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      return next(
+        createHttpError(400, {
+          message: "Validation failed",
+          errorDetails: {
+            name: "ValidationError",
+            errors: error,
+          },
+        })
+      );
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any).code === 11000) {
+      return next(
+        createHttpError(409, {
+          message: "Duplicate value error",
+          errorDetails: `A book with the same ISBN already exists.`,
+        })
+      );
+    }
+
     next({
       status: 500,
       message: "Failed to create book",

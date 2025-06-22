@@ -54,7 +54,7 @@ app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   res.status(errorStatus).json({
     message: errorMessage,
     success: false,
-    errors: errorDetails,
+    error: errorDetails,
   });
 });
 

@@ -17,21 +17,39 @@ interface IBook extends IBookDocument, Document {
 
 const bookSchema = new Schema(
   {
-    title: { type: String, required: true },
-    author: { type: String, required: true },
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+    },
+    author: {
+      type: String,
+      required: [true, "Author is required"],
+    },
     genre: {
       type: String,
-      enum: Object.values(Genre),
-      required: true,
+      enum: {
+        values: Object.values(Genre),
+        message: "Genre must be one of the allowed values",
+      },
+      required: [true, "Genre is required"],
     },
-    isbn: { type: String, required: true, unique: true },
-    description: { type: String },
+    isbn: {
+      type: String,
+      required: [true, "ISBN is required"],
+      unique: true,
+    },
+    description: {
+      type: String,
+    },
     copies: {
       type: Number,
-      required: true,
+      required: [true, "Copies field is required"],
       min: [0, "Copies must be a non-negative number"],
     },
-    available: { type: Boolean, default: true },
+    available: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

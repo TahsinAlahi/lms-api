@@ -67,6 +67,18 @@ const createBorrow: RequestHandler = async (req, res, next) => {
       data: borrowRecord,
     });
   } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      return next(
+        createHttpError(400, {
+          message: "Validation failed",
+          errorDetails: {
+            name: "ValidationError",
+            errors: error.errors,
+          },
+        })
+      );
+    }
+
     next(error);
   }
 };
