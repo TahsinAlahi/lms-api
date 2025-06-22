@@ -16,10 +16,12 @@ const postBooks: RequestHandler = async (req, res, next) => {
       copies,
     });
 
+    const { __v, ...book } = newBook.toObject();
+
     res.status(201).json({
       success: true,
       message: "Book created successfully",
-      data: newBook,
+      data: book,
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
@@ -70,7 +72,8 @@ const getAllBooks: RequestHandler = async (req, res, _next) => {
     const books = await booksModel
       .find(query)
       .sort({ [sortBy as string]: sort === "asc" ? 1 : -1 })
-      .limit(parseInt(limit as string));
+      .limit(parseInt(limit as string))
+      .select("-__v");
 
     res.status(200).json({
       success: true,
@@ -96,7 +99,7 @@ const getBookById: RequestHandler = async (req, res, next) => {
       });
     }
 
-    const book = await booksModel.findById(bookId);
+    const book = await booksModel.findById(bookId).select("-__v");
     if (!book) {
       throw createHttpError(404, {
         message: "Book not found",
@@ -145,10 +148,12 @@ const updateBookById: RequestHandler = async (req, res, next) => {
       });
     }
 
+    const { __v, ...book } = updatedBook.toObject();
+
     res.status(200).json({
       success: true,
       message: "Book updated successfully",
-      data: updatedBook,
+      data: book,
     });
   } catch (error) {
     next(error);

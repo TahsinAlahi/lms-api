@@ -61,10 +61,12 @@ const createBorrow: RequestHandler = async (req, res, next) => {
     bookDoc.copies -= quantity;
     await bookDoc.save();
 
+    const { __v, ...borrowedBookRecord } = borrowRecord.toObject();
+
     res.status(201).json({
       success: true,
       message: "Book borrowed successfully",
-      data: borrowRecord,
+      data: borrowedBookRecord,
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
